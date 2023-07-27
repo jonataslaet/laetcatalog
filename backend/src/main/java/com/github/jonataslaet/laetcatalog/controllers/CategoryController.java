@@ -3,6 +3,9 @@ package com.github.jonataslaet.laetcatalog.controllers;
 import com.github.jonataslaet.laetcatalog.controllers.dtos.CategoryDTO;
 import com.github.jonataslaet.laetcatalog.services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -18,8 +21,14 @@ public class CategoryController {
     private CategoryService categoryService;
 
     @GetMapping
-    public ResponseEntity<List<CategoryDTO>> findAll() {
-        List<CategoryDTO> categories = categoryService.findAll();
+    public ResponseEntity<Page<CategoryDTO>> findAllPaged(
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "size", defaultValue = "12") Integer size,
+            @RequestParam(value = "direction", defaultValue = "ASC") String direction,
+            @RequestParam(value = "field", defaultValue = "name") String field
+    ) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.valueOf(direction), field);
+        Page<CategoryDTO> categories = categoryService.findAllPaged(pageRequest);
         return ResponseEntity.ok(categories);
     }
 
