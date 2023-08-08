@@ -37,7 +37,7 @@ public class ProductService {
     @Transactional(readOnly = true)
     public ProductDTO findById(Long id) {
         Optional<Product> optionalProduct = productRepository.findById(id);
-        Product product = optionalProduct.orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
+        Product product = optionalProduct.orElseThrow(() -> new ResourceNotFoundException("Product not found for id = " + id));
         return new ProductDTO(product, product.getCategories());
     }
 
@@ -45,7 +45,7 @@ public class ProductService {
     public ProductDTO insert(ProductDTO productDTO) {
         Product product = new Product();
         setProductFromDTO(product, productDTO);
-        product = productRepository.save(product);
+        productRepository.save(product);
         return new ProductDTO(product);
     }
 
@@ -57,7 +57,7 @@ public class ProductService {
             product = productRepository.save(product);
             return new ProductDTO(product);
         } catch (EntityNotFoundException entityNotFoundException){
-            throw new ResourceNotFoundException("Resource not found for id = " + id);
+            throw new ResourceNotFoundException("Product not found for id = " + id);
         }
     }
 
