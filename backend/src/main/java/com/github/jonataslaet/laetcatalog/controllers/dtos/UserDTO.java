@@ -1,37 +1,37 @@
-package com.github.jonataslaet.laetcatalog.entities;
+package com.github.jonataslaet.laetcatalog.controllers.dtos;
 
-import jakarta.persistence.*;
+import com.github.jonataslaet.laetcatalog.entities.User;
 
 import java.util.HashSet;
-import java.util.Objects;
+import java.util.List;
 import java.util.Set;
 
-@Entity
-@Table(name = "tb_user")
-public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class UserDTO {
+
     private Long id;
     private String firstName;
     private String lastName;
     private String email;
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "tb_user_role",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles = new HashSet<>();
+    Set<RoleDTO> roles = new HashSet<>();
 
-    public User() {
+    public UserDTO() {
     }
 
-    public User(Long id, String firstName, String lastName, String email, String password) {
+    public UserDTO(Long id, String firstName, String lastName, String email) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.password = password;
+    }
+
+    public UserDTO(User user) {
+        id = user.getId();
+        firstName = user.getFirstName();
+        lastName = user.getLastName();
+        email = user.getEmail();
+        user.getRoles().forEach(role -> roles.add(new RoleDTO(role)));
     }
 
     public Long getId() {
@@ -74,20 +74,7 @@ public class User {
         this.password = password;
     }
 
-    public Set<Role> getRoles() {
-        return roles;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return id.equals(user.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
+    public Set<RoleDTO> getRoles() {
+        return this.roles;
     }
 }
