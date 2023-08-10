@@ -1,5 +1,8 @@
 package com.github.jonataslaet.laetcatalog.controllers.dtos;
 
+import com.github.jonataslaet.laetcatalog.services.exceptions.UserInsertValid;
+
+@UserInsertValid
 public class UserInsertDTO extends UserDTO {
 
     private String password;

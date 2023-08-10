@@ -3,6 +3,7 @@ package com.github.jonataslaet.laetcatalog.controllers;
 import com.github.jonataslaet.laetcatalog.controllers.dtos.UserDTO;
 import com.github.jonataslaet.laetcatalog.controllers.dtos.UserInsertDTO;
 import com.github.jonataslaet.laetcatalog.services.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,7 +33,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDTO> insert(@RequestBody UserInsertDTO userDTO) {
+    public ResponseEntity<UserDTO> insert(@RequestBody @Valid UserInsertDTO userDTO) {
         UserDTO savedUserDTO = userService.insert(userDTO);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(savedUserDTO.getId()).toUri();

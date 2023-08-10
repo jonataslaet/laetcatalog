@@ -3,7 +3,6 @@ package com.github.jonataslaet.laetcatalog.controllers.dtos;
 import com.github.jonataslaet.laetcatalog.entities.User;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class UserDTO {
