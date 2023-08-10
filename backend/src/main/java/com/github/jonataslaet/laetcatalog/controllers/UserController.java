@@ -2,6 +2,7 @@ package com.github.jonataslaet.laetcatalog.controllers;
 
 import com.github.jonataslaet.laetcatalog.controllers.dtos.UserDTO;
 import com.github.jonataslaet.laetcatalog.controllers.dtos.UserInsertDTO;
+import com.github.jonataslaet.laetcatalog.controllers.dtos.UserUpdateDTO;
 import com.github.jonataslaet.laetcatalog.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +42,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDTO> update(@PathVariable("id") Long id, @RequestBody UserDTO userDTO) {
+    public ResponseEntity<UserDTO> update(@PathVariable("id") Long id, @RequestBody @Valid UserUpdateDTO userDTO) {
         UserDTO updatedCategory = userService.update(id, userDTO);
         return ResponseEntity.ok(updatedCategory);
     }

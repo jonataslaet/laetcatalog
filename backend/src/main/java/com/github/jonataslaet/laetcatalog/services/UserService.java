@@ -3,6 +3,7 @@ package com.github.jonataslaet.laetcatalog.services;
 import com.github.jonataslaet.laetcatalog.controllers.dtos.RoleDTO;
 import com.github.jonataslaet.laetcatalog.controllers.dtos.UserDTO;
 import com.github.jonataslaet.laetcatalog.controllers.dtos.UserInsertDTO;
+import com.github.jonataslaet.laetcatalog.controllers.dtos.UserUpdateDTO;
 import com.github.jonataslaet.laetcatalog.entities.Role;
 import com.github.jonataslaet.laetcatalog.entities.User;
 import com.github.jonataslaet.laetcatalog.repositories.RoleRepository;
@@ -56,7 +57,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserDTO update(Long id, UserDTO userDTO) {
+    public UserDTO update(Long id, UserUpdateDTO userDTO) {
         try {
             User user = userRepository.getReferenceById(id);
             setUserFromDTO(user, userDTO);
