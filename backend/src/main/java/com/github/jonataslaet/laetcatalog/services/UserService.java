@@ -6,6 +6,7 @@ import com.github.jonataslaet.laetcatalog.controllers.dtos.UserInsertDTO;
 import com.github.jonataslaet.laetcatalog.controllers.dtos.UserUpdateDTO;
 import com.github.jonataslaet.laetcatalog.entities.Role;
 import com.github.jonataslaet.laetcatalog.entities.User;
+import com.github.jonataslaet.laetcatalog.entities.UserDetailsProjection;
 import com.github.jonataslaet.laetcatalog.repositories.RoleRepository;
 import com.github.jonataslaet.laetcatalog.repositories.UserRepository;
 import com.github.jonataslaet.laetcatalog.services.exceptions.DatabaseException;
@@ -15,15 +16,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
@@ -32,7 +37,23 @@ public class UserService {
     private RoleRepository roleRepository;
 
     @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private PasswordEncoder bCryptPasswordEncoder;
+
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        List<UserDetailsProjection> userDetailsProjections =
+                userRepository.searchUserAndRolesByEmail(email);
+        if (userDetailsProjections.isEmpty()) {
+            throw new UsernameNotFoundException("User not found for email = " + email);
+        }
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword(userDetailsProjections.get(0).getPassword());
+        for (UserDetailsProjection userDetailsProjection :
+                userDetailsProjections) {
+            user.addRole(new Role(userDetailsProjection.getRoleId(), userDetailsProjection.getAuthority()));
+        }
+        return user;
+    }
 
     @Transactional(readOnly = true)
     public Page<UserDTO> findAllPaged(Pageable pageable) {
