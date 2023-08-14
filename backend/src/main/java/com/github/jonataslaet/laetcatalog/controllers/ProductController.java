@@ -1,6 +1,7 @@
 package com.github.jonataslaet.laetcatalog.controllers;
 
 import com.github.jonataslaet.laetcatalog.controllers.dtos.ProductDTO;
+import com.github.jonataslaet.laetcatalog.entities.ProductProjection;
 import com.github.jonataslaet.laetcatalog.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,6 +24,17 @@ public class ProductController {
     public ResponseEntity<Page<ProductDTO>> findAllPaged(Pageable pageable) {
         Page<ProductDTO> categories = productService.findAllPaged(pageable);
         return ResponseEntity.ok(categories);
+    }
+
+    @GetMapping("/withtheircategories")
+    public ResponseEntity<Page<ProductProjection>> findAllPagedWithTheirCategories(
+            @RequestParam(value = "name", defaultValue = "") String name,
+            @RequestParam(value = "categoryIds", defaultValue = "") String categoryIds,
+            Pageable pageable) {
+        Page<ProductProjection> products = productService.findAllPagedWithTheirCategories(
+                name, categoryIds, pageable
+        );
+        return ResponseEntity.ok(products);
     }
 
     @GetMapping("/{id}")

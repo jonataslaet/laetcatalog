@@ -4,6 +4,7 @@ import com.github.jonataslaet.laetcatalog.controllers.dtos.CategoryDTO;
 import com.github.jonataslaet.laetcatalog.controllers.dtos.ProductDTO;
 import com.github.jonataslaet.laetcatalog.entities.Category;
 import com.github.jonataslaet.laetcatalog.entities.Product;
+import com.github.jonataslaet.laetcatalog.entities.ProductProjection;
 import com.github.jonataslaet.laetcatalog.repositories.CategoryRepository;
 import com.github.jonataslaet.laetcatalog.repositories.ProductRepository;
 import com.github.jonataslaet.laetcatalog.services.exceptions.DatabaseException;
@@ -17,6 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -32,6 +36,14 @@ public class ProductService {
     public Page<ProductDTO> findAllPaged(Pageable pageable) {
         Page<Product> products = productRepository.findAll(pageable);
         return products.map(ProductDTO::new);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ProductProjection> findAllPagedWithTheirCategories(String name, String categoryIds, Pageable pageable) {
+        List<Long> categoryLongIds = getCategoryLongIds(categoryIds);
+        Page<ProductProjection> products =
+                productRepository.findAllWithTheirCategories(name, categoryLongIds, pageable);
+        return products;
     }
 
     @Transactional(readOnly = true)
@@ -84,5 +96,10 @@ public class ProductService {
             Category category = categoryRepository.getReferenceById(categoryDTO.getId());
             product.getCategories().add(category);
         }
+    }
+
+    private List<Long> getCategoryLongIds(String categoryIds) {
+        if (categoryIds.isEmpty()) return new ArrayList<>();
+        return Arrays.stream(categoryIds.split(",")).map(Long::parseLong).toList();
     }
 }
