@@ -1,0 +1,37 @@
+version: '3.8'
+services:
+  # ====================================================================================================================
+  # LAETCATALOG SERVER
+  # ====================================================================================================================
+  laetcatalog-container-dev:
+    image: jonataslaet/laetcatalog
+    mem_limit: 500m
+    ports:
+      - '8080:8080'
+    networks:
+      - dev-network
+    depends_on:
+      - postgres-server
+    environment:
+      - APP_PROFILE=dev
+      - DB_URL=jdbc:postgresql://postgres-server:5432/dblaetcatalog
+      - DB_USERNAME=jonataslaet
+      - DB_PASSWORD=blendo273
+  # ====================================================================================================================
+  # POSTGRES SERVER
+  # ====================================================================================================================
+  postgres-server:
+    image: postgres
+    environment:
+      - POSTGRES_USER=jonataslaet
+      - POSTGRES_PASSWORD=blendo273
+      - POSTGRES_DB=dblaetcatalog
+    ports:
+      - '5432:5432'
+    networks:
+      - dev-network
+# ======================================================================================================================
+# REDE
+# ======================================================================================================================
+networks:
+  dev-network:
